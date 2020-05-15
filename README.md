@@ -1,6 +1,7 @@
 # Ansible Tower Bundle fix custom postgresql port
 
-For more information about Ansible Tower Bundle installation, visit -
+For more information about Ansible Tower Bundle installation, 
+visit -
 https://docs.ansible.com/ansible-tower/latest/html/quickinstall/download_tower.html
 
 The bundled installer only supports Red Hat Enterprise Linux and CentOS.
