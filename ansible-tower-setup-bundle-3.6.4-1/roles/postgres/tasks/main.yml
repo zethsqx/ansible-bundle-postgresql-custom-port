@@ -1,0 +1,12 @@
+---
+- shell: semanage port -a -t postgresql_port_t {{ pg_port }} -p tcp
+  ignore_errors: yes
+
+- include: vars.yml
+
+- include_tasks: init.yml
+  when: not postgres_exec_vars_only | bool
+
+- include_tasks: conf.yml
+  when: not postgres_exec_vars_only | bool
+

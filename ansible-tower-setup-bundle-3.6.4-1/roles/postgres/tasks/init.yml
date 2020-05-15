@@ -1,0 +1,40 @@
+---
+# Tasks for configuring PostgreSQL server.
+
+- name: init postgresql
+  command: '{{ pg_initdb_command }}'
+  args:
+    creates: "{{ pg_conf_dir }}/PG_VERSION"
+
+- name: Make sure PostgreSQL is started
+  service:
+    name: '{{ postgres_init_name }}'
+    state: started
+  register: postgresql_start
+
+- name: reapply is not correct port
+  shell: ss -tpn state listening sport = :{{ pg_port }} | grep postmaster
+  ignore_errors: yes
+  register: check_pgport_result
+
+- block:
+    - name: Apply postgresql general settings
+      template:
+        dest: '{{ pg_conf_location }}'
+        owner: postgres
+        src: postgresql.conf.j2
+    - debug:
+        msg: '{{ postgres_init_name }}'
+    - name: postgresql restart
+      service:
+        name: '{{ postgres_init_name }}'
+        state: restarted
+  when: check_pgport_result.rc == 1
+  ignore_errors: yes
+
+- name: Wait for PostgreSQL to start if it wasnt
+  wait_for:
+    host: localhost
+    port: '{{ pg_port }}'
+  when: postgresql_start is changed
+

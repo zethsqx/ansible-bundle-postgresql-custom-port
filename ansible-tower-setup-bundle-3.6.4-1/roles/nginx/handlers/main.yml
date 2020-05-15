@@ -1,0 +1,17 @@
+---
+# Handlers for common notifications.
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: stopped
+  notify: kill ps
+- name: kill ps
+  shell: kill -9 $(ps -ef | grep [n]ginx | awk '{print $2}'); exit 0
+  ignore_errors: yes
+  notify: start nginx
+- name: start nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
